@@ -68,7 +68,6 @@ const Login: React.FC = () => {
     setErrors({});
 
     try {
-      // Simulate API call
       await new Promise<void>((resolve) => setTimeout(resolve, 1500));
       login();
       navigate();
