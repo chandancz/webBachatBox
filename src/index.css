@@ -41,16 +41,26 @@ All colors MUST be HSL.
     --performance-good: 45 93% 47%;
     --performance-warning: 25 95% 53%;
     --performance-poor: 0 84% 60%;
-    
+
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 46%));
-    --gradient-performance: linear-gradient(90deg, hsl(142 76% 36%), hsl(45 93% 47%), hsl(25 95% 53%), hsl(0 84% 60%));
+    --gradient-primary: linear-gradient(
+      135deg,
+      hsl(142 76% 36%),
+      hsl(142 76% 46%)
+    );
+    --gradient-performance: linear-gradient(
+      90deg,
+      hsl(142 76% 36%),
+      hsl(45 93% 47%),
+      hsl(25 95% 53%),
+      hsl(0 84% 60%)
+    );
     --gradient-bg: linear-gradient(180deg, hsl(240 10% 3.9%), hsl(240 10% 7%));
-    
+
     /* Shadows */
     --shadow-glow: 0 0 40px hsl(142 76% 36% / 0.3);
     --shadow-card: 0 10px 30px -10px hsl(0 0% 0% / 0.3);
-    
+
     /* Animation */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -120,4 +130,15 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
