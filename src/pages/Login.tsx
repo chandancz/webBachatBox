@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Eye, EyeOff, Moon, Sun, Mail, Lock } from "lucide-react";
+import { useTheme } from "@/context/ThemeContext";
 
 interface FormData {
   email: string;
@@ -12,30 +13,7 @@ interface FormErrors {
   submit?: string;
 }
 
-const Login: React.FC = () => {
-  const [form, setForm] = useState<FormData>({
-    email: "",
-    password: "",
-  });
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  // Mock AuthContext for demo - replace with your actual context
-  const login = (): void => console.log("Login attempted");
-  const navigate = (): void => console.log("Navigate to profile");
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
-    if (errors[name as keyof FormErrors]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
-  };
-
-  const validateForm = (): FormErrors => {
+const validateForm = (form:any): FormErrors => {
     const newErrors: FormErrors = {};
 
     if (!form.email) {
@@ -53,11 +31,40 @@ const Login: React.FC = () => {
     return newErrors;
   };
 
+const Login: React.FC = () => {
+  const [form, setForm] = useState<FormData>({
+    email: "",
+    password: "",
+  });
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [errors, setErrors] = useState<FormErrors>({});
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+ const { theme, updateTheme } = useTheme();
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const isDarkMode = theme === "dark" || (theme === "system" && prefersDark);
+  const login = (): void => console.log("Login attempted");
+  const navigate = (): void => console.log("Navigate to profile");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+    if (errors[name as keyof FormErrors]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+  
+
   const handleSubmit = async (
     e: React.FormEvent<HTMLDivElement>
   ): Promise<void> => {
     e.preventDefault();
-    const newErrors = validateForm();
+    const newErrors = validateForm(form);
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -78,9 +85,13 @@ const Login: React.FC = () => {
     }
   };
 
-  const toggleTheme = (): void => {
-    setIsDarkMode(!isDarkMode);
-  };
+ const handleToggleTheme = () => {
+  if (theme === "light") {
+    updateTheme("dark");
+  } else {
+    updateTheme("light");
+  }
+};
 
   const themeClasses: string = isDarkMode
     ? "bg-gray-900 text-white"
@@ -114,7 +125,7 @@ const Login: React.FC = () => {
 
       {/* Theme toggle */}
       <button
-        onClick={toggleTheme}
+        onClick={handleToggleTheme}
         className={`fixed top-6 right-6 p-3 rounded-full transition-all duration-300 hover:scale-110 ${
           isDarkMode
             ? "bg-gray-700 hover:bg-gray-600 text-yellow-400"
@@ -150,7 +161,6 @@ const Login: React.FC = () => {
         </div>
 
         <div onSubmit={handleSubmit} className="space-y-6">
-          {/* Email Field */}
           <div className="space-y-2">
             <label
               className={`text-sm font-medium ${
@@ -187,7 +197,6 @@ const Login: React.FC = () => {
             )}
           </div>
 
-          {/* Password Field */}
           <div className="space-y-2">
             <label
               className={`text-sm font-medium ${
@@ -235,7 +244,6 @@ const Login: React.FC = () => {
             )}
           </div>
 
-          {/* Remember me and Forgot password */}
           <div className="flex items-center justify-between">
             <label className="flex items-center space-x-2 cursor-pointer">
               <input
@@ -258,14 +266,12 @@ const Login: React.FC = () => {
             </a>
           </div>
 
-          {/* Submit Error */}
           {errors.submit && (
             <p className="text-red-500 text-sm text-center bg-red-50 border border-red-200 rounded-lg p-3">
               {errors.submit}
             </p>
           )}
 
-          {/* Submit Button */}
           <button
             type="submit"
             disabled={isLoading}
@@ -286,7 +292,6 @@ const Login: React.FC = () => {
           </button>
         </div>
 
-        {/* Footer */}
         <div className="mt-8 text-center">
           <p
             className={`text-sm ${
@@ -303,7 +308,6 @@ const Login: React.FC = () => {
           </p>
         </div>
 
-        {/* Social Login */}
         <div className="mt-6">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">

@@ -1,50 +1,37 @@
 import { Button } from "@/components/ui/button";
 import React, { useState, useRef, useEffect } from "react";
-import {
-  Sun,
-  Moon,
-  Monitor,
-  Settings as SettingsIcon,
-  User,
-  LogOut,
-  ChevronDown,
-  Bell,
-  HelpCircle,
-} from "lucide-react";
+import { Sun, Moon, Settings as SettingsIcon, User, LogOut, ChevronDown, Bell, HelpCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "@/context/ThemeContext";
 
 function Header() {
-  const navigate=useNavigate()
-  const { theme, updateTheme } = useTheme(); 
+  const navigate = useNavigate();
+  const { theme, updateTheme } = useTheme();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Define theme options strictly
-  const themeOptions: { name: "light" | "dark" | "system"; icon: any; label: string }[] = [
+  const themeOptions: { name: "light" | "dark"; icon: any; label: string }[] = [
     { name: "light", icon: Sun, label: "Light" },
     { name: "dark", icon: Moon, label: "Dark" },
-    { name: "system", icon: Monitor, label: "System" },
   ];
 
-  // Mock user data - replace with actual user data
   const user = {
     name: "John Doe",
     email: "john.doe@example.com",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
+    avatar:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
   };
 
-  // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: any) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -53,23 +40,17 @@ function Header() {
   };
 
   const handleLogout = () => {
-    // Add your logout logic here
-    console.log('Logging out...');
     setIsDropdownOpen(false);
   };
 
   const handleProfileClick = () => {
-    // Add your profile navigation logic here
-    console.log('Navigate to profile...');
     setIsDropdownOpen(false);
-    navigate('/profile')
-    
+    navigate("/profile");
   };
 
   const handleSettingsClick = () => {
-    // Add your settings navigation logic here
-    console.log('Navigate to settings...');
     setIsDropdownOpen(false);
+    navigate("/settings");
   };
 
   return (
@@ -78,152 +59,152 @@ function Header() {
         {/* Logo / Left Side */}
         <div className="flex items-center">
           <div className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-              <div className="flex items-center space-x-3">
-           {/* BachatBox Logo */}
-          <svg
-            className="h-8 w-8"
-            viewBox="0 0 48 48"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <defs>
-              <linearGradient
-                id="boxGradient"
-                x1="0%"
-                y1="0%"
-                x2="100%"
-                y2="100%"
+            <div className="flex items-center space-x-3">
+              {/* BachatBox Logo */}
+              <svg
+                className="h-8 w-8"
+                viewBox="0 0 48 48"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                <stop
-                  offset="0%"
+                <defs>
+                  <linearGradient
+                    id="boxGradient"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      className="text-blue-600 dark:text-blue-400"
+                      style={{ stopColor: "currentColor" }}
+                    />
+                    <stop
+                      offset="100%"
+                      className="text-purple-600 dark:text-purple-400"
+                      style={{ stopColor: "currentColor" }}
+                    />
+                  </linearGradient>
+                  <linearGradient
+                    id="coinGradient"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop offset="0%" style={{ stopColor: "#F59E0B" }} />
+                    <stop offset="100%" style={{ stopColor: "#EF4444" }} />
+                  </linearGradient>
+                </defs>
+
+                {/* Main box */}
+                <rect
+                  x="8"
+                  y="20"
+                  width="32"
+                  height="24"
+                  rx="4"
+                  ry="4"
+                  fill="url(#boxGradient)"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
                   className="text-blue-600 dark:text-blue-400"
-                  style={{ stopColor: "currentColor" }}
                 />
-                <stop
-                  offset="100%"
-                  className="text-purple-600 dark:text-purple-400"
-                  style={{ stopColor: "currentColor" }}
+
+                {/* Box lid */}
+                <rect
+                  x="8"
+                  y="16"
+                  width="32"
+                  height="6"
+                  rx="4"
+                  ry="4"
+                  fill="url(#boxGradient)"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  className="text-blue-600 dark:text-blue-400"
                 />
-              </linearGradient>
-              <linearGradient
-                id="coinGradient"
-                x1="0%"
-                y1="0%"
-                x2="100%"
-                y2="100%"
-              >
-                <stop offset="0%" style={{ stopColor: "#F59E0B" }} />
-                <stop offset="100%" style={{ stopColor: "#EF4444" }} />
-              </linearGradient>
-            </defs>
 
-            {/* Main box */}
-            <rect
-              x="8"
-              y="20"
-              width="32"
-              height="24"
-              rx="4"
-              ry="4"
-              fill="url(#boxGradient)"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              className="text-blue-600 dark:text-blue-400"
-            />
+                {/* Coins */}
+                <circle
+                  cx="18"
+                  cy="32"
+                  r="4"
+                  fill="url(#coinGradient)"
+                  stroke="#D97706"
+                  strokeWidth="0.5"
+                />
+                <circle
+                  cx="30"
+                  cy="32"
+                  r="4"
+                  fill="url(#coinGradient)"
+                  stroke="#D97706"
+                  strokeWidth="0.5"
+                />
+                <circle
+                  cx="24"
+                  y="26"
+                  r="4"
+                  fill="url(#coinGradient)"
+                  stroke="#D97706"
+                  strokeWidth="0.5"
+                />
 
-            {/* Box lid */}
-            <rect
-              x="8"
-              y="16"
-              width="32"
-              height="6"
-              rx="4"
-              ry="4"
-              fill="url(#boxGradient)"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              className="text-blue-600 dark:text-blue-400"
-            />
+                {/* Dollar signs */}
+                <text
+                  x="18"
+                  y="35"
+                  textAnchor="middle"
+                  fill="white"
+                  fontSize="6"
+                  fontWeight="bold"
+                  fontFamily="Arial, sans-serif"
+                >
+                  $
+                </text>
+                <text
+                  x="30"
+                  y="35"
+                  textAnchor="middle"
+                  fill="white"
+                  fontSize="6"
+                  fontWeight="bold"
+                  fontFamily="Arial, sans-serif"
+                >
+                  $
+                </text>
+                <text
+                  x="24"
+                  y="29"
+                  textAnchor="middle"
+                  fill="white"
+                  fontSize="6"
+                  fontWeight="bold"
+                  fontFamily="Arial, sans-serif"
+                >
+                  $
+                </text>
 
-            {/* Coins */}
-            <circle
-              cx="18"
-              cy="32"
-              r="4"
-              fill="url(#coinGradient)"
-              stroke="#D97706"
-              strokeWidth="0.5"
-            />
-            <circle
-              cx="30"
-              cy="32"
-              r="4"
-              fill="url(#coinGradient)"
-              stroke="#D97706"
-              strokeWidth="0.5"
-            />
-            <circle
-              cx="24"
-              y="26"
-              r="4"
-              fill="url(#coinGradient)"
-              stroke="#D97706"
-              strokeWidth="0.5"
-            />
+                {/* Box handle */}
+                <rect
+                  x="20"
+                  y="14"
+                  width="8"
+                  height="3"
+                  rx="1.5"
+                  ry="1.5"
+                  fill="currentColor"
+                  className="text-blue-700 dark:text-blue-300"
+                />
+              </svg>
 
-            {/* Dollar signs */}
-            <text
-              x="18"
-              y="35"
-              textAnchor="middle"
-              fill="white"
-              fontSize="6"
-              fontWeight="bold"
-              fontFamily="Arial, sans-serif"
-            >
-              $
-            </text>
-            <text
-              x="30"
-              y="35"
-              textAnchor="middle"
-              fill="white"
-              fontSize="6"
-              fontWeight="bold"
-              fontFamily="Arial, sans-serif"
-            >
-              $
-            </text>
-            <text
-              x="24"
-              y="29"
-              textAnchor="middle"
-              fill="white"
-              fontSize="6"
-              fontWeight="bold"
-              fontFamily="Arial, sans-serif"
-            >
-              $
-            </text>
-
-            {/* Box handle */}
-            <rect
-              x="20"
-              y="14"
-              width="8"
-              height="3"
-              rx="1.5"
-              ry="1.5"
-              fill="currentColor"
-              className="text-blue-700 dark:text-blue-300"
-            />
-          </svg>
-
-          <Link to="/">
-            <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
-              BachatBox
-            </h1>
-          </Link>
-        </div>
+              <Link to="/home">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+                  BachatBox
+                </h1>
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -237,11 +218,10 @@ function Header() {
                 variant={theme === option.name ? "default" : "ghost"}
                 size="sm"
                 onClick={() => updateTheme(option.name)}
-                className={`h-7 w-7 sm:h-8 sm:w-8 p-0 transition-all duration-200 ${
-                  theme === option.name
+                className={`h-7 w-7 sm:h-8 sm:w-8 p-0 transition-all duration-200 ${theme === option.name
                     ? "bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
                     : "hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400"
-                }`}
+                  }`}
                 aria-label={`Switch to ${option.label} theme`}
               >
                 <option.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -278,14 +258,17 @@ function Header() {
                 />
                 <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 bg-green-500 rounded-full border border-white dark:border-gray-900"></div>
               </div>
-              
+
               {/* User Name - Hidden on mobile */}
               <span className="hidden sm:block text-sm font-medium text-gray-700 dark:text-gray-300 max-w-24 truncate">
-                {user.name.split(' ')[0]}
+                {user.name.split(" ")[0]}
               </span>
-              
+
               {/* Dropdown Arrow */}
-              <ChevronDown className={`h-3 w-3 text-gray-500 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown
+                className={`h-3 w-3 text-gray-500 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""
+                  }`}
+              />
             </Button>
 
             {/* Dropdown Menu */}
@@ -319,18 +302,16 @@ function Header() {
                     <User className="h-4 w-4 mr-3" />
                     View Profile
                   </button>
-                  
-                  <button
-                    onClick={handleSettingsClick}
+
+                  <Link
+                    to="/settings"
                     className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   >
                     <SettingsIcon className="h-4 w-4 mr-3" />
                     Settings
-                  </button>
+                  </Link>
 
-                  <button
-                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                  >
+                  <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <HelpCircle className="h-4 w-4 mr-3" />
                     Help & Support
                   </button>
