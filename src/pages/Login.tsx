@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Eye, EyeOff, Moon, Sun, Mail, Lock } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
+import { useQuery } from "@tanstack/react-query";
+import { fetchPosts } from "@/graphql/service/post.service";
+import { authLogin } from "@/graphql/service/auth.services";
+import { useNavigate } from "react-router-dom";
 
 interface FormData {
   email: string;
@@ -13,31 +17,33 @@ interface FormErrors {
   submit?: string;
 }
 
-const validateForm = (form:any): FormErrors => {
-    const newErrors: FormErrors = {};
+const validateForm = (form: any): FormErrors => {
+  const newErrors: FormErrors = {};
 
-    if (!form.email) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-      newErrors.email = "Please enter a valid email";
-    }
+  if (!form.email) {
+    newErrors.email = "Email is required";
+  } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+    newErrors.email = "Please enter a valid email";
+  }
 
-    if (!form.password) {
-      newErrors.password = "Password is required";
-    } else if (form.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
+  if (!form.password) {
+    newErrors.password = "Password is required";
+  } else if (form.password.length < 6) {
+    newErrors.password = "Password must be at least 6 characters";
+  }
 
-    return newErrors;
-  };
+  return newErrors;
+};
 
 const Login: React.FC = () => {
+  const navigation = useNavigate();
   const [form, setForm] = useState<FormData>({
     email: "",
     password: "",
   });
+
   const [showPassword, setShowPassword] = useState<boolean>(false);
-    const [errors, setErrors] = useState<FormErrors>({});
+  const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
@@ -45,11 +51,9 @@ const Login: React.FC = () => {
   }, []);
 
   if (!mounted) return null;
- const { theme, updateTheme } = useTheme();
+  const { theme, updateTheme } = useTheme();
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   const isDarkMode = theme === "dark" || (theme === "system" && prefersDark);
-  const login = (): void => console.log("Login attempted");
-  const navigate = (): void => console.log("Navigate to profile");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
@@ -58,10 +62,9 @@ const Login: React.FC = () => {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
-  
 
   const handleSubmit = async (
-    e: React.FormEvent<HTMLDivElement>
+    e: React.FormEvent<HTMLFormElement>
   ): Promise<void> => {
     e.preventDefault();
     const newErrors = validateForm(form);
@@ -70,14 +73,16 @@ const Login: React.FC = () => {
       setErrors(newErrors);
       return;
     }
-
-    setIsLoading(true);
-    setErrors({});
-
     try {
-      await new Promise<void>((resolve) => setTimeout(resolve, 1500));
-      login();
-      navigate();
+      const user = await authLogin(form.email);
+      const {token}=user.loginUser;
+      localStorage.setItem("token", token);
+      // setIsLoading(true);
+      // setErrors({});
+      // await new Promise<void>((resolve) => setTimeout(resolve, 1500));
+      // login();
+      // navigate();
+      navigation("/home");
     } catch (error) {
       setErrors({ submit: "Login failed. Please try again." });
     } finally {
@@ -85,13 +90,13 @@ const Login: React.FC = () => {
     }
   };
 
- const handleToggleTheme = () => {
-  if (theme === "light") {
-    updateTheme("dark");
-  } else {
-    updateTheme("light");
-  }
-};
+  const handleToggleTheme = () => {
+    if (theme === "light") {
+      updateTheme("dark");
+    } else {
+      updateTheme("light");
+    }
+  };
 
   const themeClasses: string = isDarkMode
     ? "bg-gray-900 text-white"
@@ -160,137 +165,140 @@ const Login: React.FC = () => {
           </p>
         </div>
 
-        <div onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <label
-              className={`text-sm font-medium ${
-                isDarkMode ? "text-gray-300" : "text-gray-700"
-              }`}
-            >
-              Email Address
-            </label>
-            <div className="relative">
-              <Mail
-                className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${
-                  isDarkMode ? "text-gray-400" : "text-gray-500"
-                }`}
-                size={18}
-              />
-              <input
-                name="email"
-                type="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder="Enter your email"
-                className={`w-full pl-10 pr-4 py-3 rounded-lg border transition-all duration-200 focus:ring-2 focus:ring-opacity-50 ${inputClasses} ${
-                  errors.email
-                    ? "border-red-500 focus:border-red-500 focus:ring-red-200"
-                    : ""
-                }`}
-                required
-              />
-            </div>
-            {errors.email && (
-              <p className="text-red-500 text-sm flex items-center gap-1">
-                {errors.email}
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <label
-              className={`text-sm font-medium ${
-                isDarkMode ? "text-gray-300" : "text-gray-700"
-              }`}
-            >
-              Password
-            </label>
-            <div className="relative">
-              <Lock
-                className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${
-                  isDarkMode ? "text-gray-400" : "text-gray-500"
-                }`}
-                size={18}
-              />
-              <input
-                name="password"
-                type={showPassword ? "text" : "password"}
-                value={form.password}
-                onChange={handleChange}
-                placeholder="Enter your password"
-                className={`w-full pl-10 pr-12 py-3 rounded-lg border transition-all duration-200 focus:ring-2 focus:ring-opacity-50 ${inputClasses} ${
-                  errors.password
-                    ? "border-red-500 focus:border-red-500 focus:ring-red-200"
-                    : ""
-                }`}
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${
-                  isDarkMode
-                    ? "text-gray-400 hover:text-gray-300"
-                    : "text-gray-500 hover:text-gray-700"
-                } transition-colors`}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-            {errors.password && (
-              <p className="text-red-500 text-sm flex items-center gap-1">
-                {errors.password}
-              </p>
-            )}
-          </div>
-
-          <div className="flex items-center justify-between">
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <input
-                type="checkbox"
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-              />
-              <span
-                className={`text-sm ${
-                  isDarkMode ? "text-gray-300" : "text-gray-600"
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label
+                className={`text-sm font-medium ${
+                  isDarkMode ? "text-gray-300" : "text-gray-700"
                 }`}
               >
-                Remember me
-              </span>
-            </label>
-            <a
-              href="#"
-              className="text-sm text-blue-600 hover:text-blue-500 transition-colors font-medium"
-            >
-              Forgot password?
-            </a>
-          </div>
-
-          {errors.submit && (
-            <p className="text-red-500 text-sm text-center bg-red-50 border border-red-200 rounded-lg p-3">
-              {errors.submit}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={`w-full py-3 px-4 rounded-lg font-semibold text-white transition-all duration-200 transform hover:scale-[1.02] focus:ring-4 focus:ring-opacity-50 ${
-              isLoading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:ring-blue-500 shadow-lg hover:shadow-xl"
-            }`}
-          >
-            {isLoading ? (
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Signing in...</span>
+                Email Address
+              </label>
+              <div className="relative">
+                <Mail
+                  className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${
+                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                  size={18}
+                />
+                <input
+                  name="email"
+                  type="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  placeholder="Enter your email"
+                  className={`w-full pl-10 pr-4 py-3 rounded-lg border transition-all duration-200 focus:ring-2 focus:ring-opacity-50 ${inputClasses} ${
+                    errors.email
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                      : ""
+                  }`}
+                  required
+                />
               </div>
-            ) : (
-              "Sign In"
+              {errors.email && (
+                <p className="text-red-500 text-sm flex items-center gap-1">
+                  {errors.email}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <label
+                className={`text-sm font-medium ${
+                  isDarkMode ? "text-gray-300" : "text-gray-700"
+                }`}
+              >
+                Password
+              </label>
+              <div className="relative">
+                <Lock
+                  className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${
+                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                  size={18}
+                />
+                <input
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  value={form.password}
+                  onChange={handleChange}
+                  placeholder="Enter your password"
+                  className={`w-full pl-10 pr-12 py-3 rounded-lg border transition-all duration-200 focus:ring-2 focus:ring-opacity-50 ${inputClasses} ${
+                    errors.password
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                      : ""
+                  }`}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${
+                    isDarkMode
+                      ? "text-gray-400 hover:text-gray-300"
+                      : "text-gray-500 hover:text-gray-700"
+                  } transition-colors`}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-red-500 text-sm flex items-center gap-1">
+                  {errors.password}
+                </p>
+              )}
+            </div>
+
+            <div className="flex items-center justify-between">
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                />
+                <span
+                  className={`text-sm ${
+                    isDarkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
+                  Remember me
+                </span>
+              </label>
+              <a
+                href="#"
+                className="text-sm text-blue-600 hover:text-blue-500 transition-colors font-medium"
+              >
+                Forgot password?
+              </a>
+            </div>
+
+            {errors.submit && (
+              <p className="text-red-500 text-sm text-center bg-red-50 border border-red-200 rounded-lg p-3">
+                {errors.submit}
+              </p>
             )}
-          </button>
-        </div>
+
+            <button
+              type="submit"
+              // onClick={handleSubmit}
+              disabled={isLoading}
+              className={`w-full py-3 px-4 rounded-lg font-semibold text-white transition-all duration-200 transform hover:scale-[1.02] focus:ring-4 focus:ring-opacity-50 ${
+                isLoading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:ring-blue-500 shadow-lg hover:shadow-xl"
+              }`}
+            >
+              {isLoading ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Signing in...</span>
+                </div>
+              ) : (
+                "Sign In"
+              )}
+            </button>
+          </div>
+        </form>
 
         <div className="mt-8 text-center">
           <p

@@ -1,8 +1,6 @@
 // src/components/Posts.tsx
+import { fetchPosts } from '@/graphql/service/post.service';
 import { useQuery } from '@tanstack/react-query';
-import { fetchPosts } from '@/graphql/requests/post.requests';
-
-
 export default function Posts() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['posts'],
