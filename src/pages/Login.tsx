@@ -77,6 +77,7 @@ const Login: React.FC = () => {
       const user = await authLogin(form.email);
       const {token}=user.loginUser;
       localStorage.setItem("token", token);
+      localStorage.setItem("isLoggedIn", "true");
       // setIsLoading(true);
       // setErrors({});
       // await new Promise<void>((resolve) => setTimeout(resolve, 1500));
@@ -84,7 +85,7 @@ const Login: React.FC = () => {
       // navigate();
       navigation("/home");
     } catch (error) {
-      setErrors({ submit: "Login failed. Please try again." });
+      setErrors({ submit: error.message});
     } finally {
       setIsLoading(false);
     }

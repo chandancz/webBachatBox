@@ -16,6 +16,8 @@ import {
   Calendar,
 } from "lucide-react";
 import Header from "./components/Header";
+import { useQuery } from "@tanstack/react-query";
+import { getUserList } from "@/graphql/service/auth.services";
 
 const Index = () => {
   const [expenses, setExpenses] = useState([]);
@@ -29,6 +31,17 @@ const Index = () => {
     amount: "",
     date: new Date().toISOString().split("T")[0],
   });
+
+  const {
+    data:categorie ,isLoading,error,} = useQuery({
+    queryKey: ["posts"],
+    queryFn:()=> getUserList(),
+  });
+
+  console.log(categorie, '==>categories')
+
+  console.log(isLoading,'==>isLoading')
+
 
   const categories = [
     { name: "Food", icon: UtensilsCrossed },
@@ -108,7 +121,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
-     <Header />
+      <Header />
       <main className="container mx-auto px-4 py-6 space-y-6 max-w-4xl">
         {/* Monthly Summary - Now at Top */}
         <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">

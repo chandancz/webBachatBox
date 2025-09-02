@@ -10,5 +10,14 @@ export const AUTH_LOGIN =(email:string)=> gql`
         token
     }
 }
+`;
 
+export const GET_USER_LIST =()=> gql`
+ query Categories {
+    categories {
+        id
+        name
+        user
+    }
+}
 `;

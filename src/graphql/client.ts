@@ -15,15 +15,16 @@ export const graphqlRequest = async <T>(
 
     return response;
   } catch (error: any) {
+    // console.log(error,'====>error')
     if (error?.response?.errors?.length) {
       const gqlErrors = error.response.errors;
       const firstError = gqlErrors[0];
       const message = firstError.message || 'GraphQL Error';
       const code = firstError.extensions?.code || 'UNKNOWN_GRAPHQL_ERROR';
       const statusCode = firstError.extensions?.originalError?.statusCode || null;
-      console.error(`[GraphQL Error] Code: ${code}, Message: ${message}, Status: ${statusCode}`);
-      // alert(message)
-      // throw new Error(message); 
+      // console.error(`[GraphQL Error] Code: ${code}, Message: ${message}, Status: ${statusCode}`);
+      alert(message)
+      throw new Error(message); 
     }
 
     if (error?.response?.status === 401) {
